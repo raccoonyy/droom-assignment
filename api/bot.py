@@ -6,8 +6,8 @@ from fastapi import FastAPI, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse
 
-from api.gen_messages import gen_greeting, gen_temperature
-from api.models import CurrentWeather, HistoricalWeather
+from api.gen_messages import gen_greeting, gen_temperature, gen_heads_up
+from api.models import CurrentWeather, HistoricalWeather, ForecastWeather
 
 app = FastAPI()
 ONE_MINUTE = 60
@@ -26,11 +26,13 @@ async def summary(
     weathers = await get_weathers(lat=lat, lon=lon)
     current_weather = get_current_weather(weathers)
     historical_weathers = get_historical_weathers(weathers)
+    forecast_weathers = get_forecast_weathers(weathers)
 
     return {
         "summary": {
             "greeting": gen_greeting(current_weather),
-            "temperature": gen_temperature(historical_weathers, current_weather)
+            "temperature": gen_temperature(historical_weathers, current_weather),
+            "heads-up": gen_heads_up(forecast_weathers),
         }
     }
 
@@ -48,6 +50,14 @@ def get_historical_weathers(data):
     return [
         HistoricalWeather(**datum) for datum in data
         if ONE_MINUTE < int(now.timestamp()) - datum['timestamp']
+    ]
+
+
+def get_forecast_weathers(data):
+    now = datetime.now()
+    return [
+        ForecastWeather(**datum) for datum in data
+        if now.timestamp() < datum['timestamp']
     ]
 
 
@@ -69,5 +79,14 @@ def get_mock_response():
             "rain1h": random.choice(range(0, 110))
         })
 
+    # forecast weathers
+    for i in range(6, 43, 6):
+        results.append({
+            "timestamp": int((now + timedelta(hours=i)).timestamp()),
+            "code": random.choice([0, 1, 2, 3]),
+            "min_temp": random.choice(range(-20, 40)),
+            "max_temp": random.choice(range(-20, 40)),
+            "rain": random.choice(range(0, 110))
+        })
 
     return json.dumps(results)

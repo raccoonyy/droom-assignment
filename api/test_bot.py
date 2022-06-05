@@ -37,3 +37,4 @@ class TestSummary(TestCase):
         assert response.status_code == 200
         assert response.json()['summary']['greeting'] != ''
         assert response.json()['summary']['temperature'] != ''
+        assert response.json()['summary']['heads-up'] != ''
