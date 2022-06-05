@@ -2,7 +2,7 @@ import json
 import random
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse
 
@@ -19,7 +19,10 @@ async def validation_exception_handler(request, exc):
 
 
 @app.get("/summary")
-async def summary(lat: float, lon: float):
+async def summary(
+        lat: float = Query(ge=-90, lt=90),
+        lon: float = Query(ge=-180, lt=180)
+):
     weathers = await get_weathers(lat=lat, lon=lon)
     current_weather = get_current_weather(weathers)
 

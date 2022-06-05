@@ -21,6 +21,12 @@ def test_summary(mock_api):
     response = client.get('/summary')
     assert response.status_code == 400
 
+    response = client.get('/summary', params={'lat': 91, 'lon': 180})
+    assert response.status_code == 400
+
+    response = client.get('/summary', params={'lat': 90, 'lon': 181})
+    assert response.status_code == 400
+
     response = client.get('/summary', params={'lat': 37.5, 'lon': 127})
     assert response.status_code == 200
     assert response.json()['summary']['greeting'] != ''
