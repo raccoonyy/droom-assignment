@@ -1,4 +1,4 @@
-from api.models import CurrentWeather
+from api.models import CurrentWeather, HistoricalWeather
 
 
 def gen_greeting(weather: CurrentWeather):
@@ -19,3 +19,27 @@ def gen_greeting(weather: CurrentWeather):
             return "날이 참 춥네요."
         case _:
             return "날씨가 참 맑습니다."
+
+
+def gen_temperature(weathers: list[HistoricalWeather], current_weather: CurrentWeather):
+    weathers = sorted(weathers, key=lambda d: d.timestamp)
+    oldest_weather = weathers[0]
+    min_temp = min([int(weather.temp) for weather in weathers] + [int(current_weather.temp)])
+    max_temp = max([int(weather.temp) for weather in weathers] + [int(current_weather.temp)])
+
+    difference = int(current_weather.temp) - int(oldest_weather.temp)
+    if difference > 0 and current_weather.temp >= 15:
+        text = f"어제보다 {abs(difference)}도 덜 덥습니다."
+    elif difference > 0 and current_weather.temp < 15:
+        text = f"어제보다 {abs(difference)}도 더 춥습니다."
+    elif difference < 0 and current_weather.temp >= 15:
+        text = f"어제보다 {abs(difference)}도 더 덥습니다."
+    elif difference < 0 and current_weather.temp < 15:
+        text = f"어제보다 {abs(difference)}도 덜 춥습니다."
+    elif difference == 0 and current_weather.temp >= 15:
+        text = "어제와 비슷하게 덥습니다."
+    else:
+        text = "어제와 비슷하게 춥습니다."
+
+    text += f" 최고기온은 {max_temp}도, 최저기온은 {min_temp}도 입니다."
+    return text

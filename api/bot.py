@@ -41,6 +41,14 @@ def get_current_weather(data):
     ][0]
 
 
+def get_historical_weathers(data):
+    now = datetime.now()
+    return [
+        HistoricalWeather(**datum) for datum in data
+        if ONE_MINUTE < int(now.timestamp()) - datum['timestamp']
+    ]
+
+
 async def get_weathers(lat: float, lon: float):
     return json.loads(get_mock_response())
 
