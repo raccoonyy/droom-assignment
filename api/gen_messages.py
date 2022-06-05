@@ -1,4 +1,4 @@
-from api.models import CurrentWeather, HistoricalWeather
+from api.models import CurrentWeather, HistoricalWeather, ForecastWeather
 
 
 def gen_greeting(weather: CurrentWeather):
@@ -43,3 +43,18 @@ def gen_temperature(weathers: list[HistoricalWeather], current_weather: CurrentW
 
     text += f" 최고기온은 {max_temp}도, 최저기온은 {min_temp}도 입니다."
     return text
+
+
+def gen_heads_up(weathers: list[ForecastWeather]):
+    weathers = sorted(weathers, key=lambda d: d.timestamp)
+    codes = [weather.code for weather in weathers]
+
+    if codes[:4].count(3) >= 2:
+        return "내일 폭설이 내릴 수도 있으니 외출 시 주의하세요."
+    elif codes.count(3) >= 2:
+        return "눈이 내릴 예정이니 외출 시 주의하세요."
+    elif codes[:4].count(2) >= 2:
+        return "폭우가 내릴 예정이에요. 우산을 미리 챙겨두세요."
+    elif codes.count(2) >= 2:
+        return "며칠동안 비 소식이 있어요."
+    return "날씨는 대체로 평온할 예정이에요."

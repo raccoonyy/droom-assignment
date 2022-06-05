@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from api.gen_messages import gen_greeting, gen_temperature
-from api.models import CurrentWeather, HistoricalWeather
+from api.gen_messages import gen_greeting, gen_temperature, gen_heads_up
+from api.models import CurrentWeather, HistoricalWeather, ForecastWeather
 
 
 class TestMessages(TestCase):
@@ -37,3 +37,18 @@ class TestMessages(TestCase):
         ]
 
         assert gen_temperature(weathers=historical_weathers, current_weather=current_weather) == text
+
+    @parameterized.expand([
+        ("내일 폭설이 내릴 수도 있으니 외출 시 주의하세요.", [0, 3, 0, 3, 0, 0, 0, 0]),
+        ("눈이 내릴 예정이니 외출 시 주의하세요.", [0, 3, 0, 0, 3, 0, 0, 0]),
+        ("폭우가 내릴 예정이에요. 우산을 미리 챙겨두세요.", [0, 2, 0, 2, 0, 0, 0, 0]),
+        ("며칠동안 비 소식이 있어요.", [2, 3, 0, 0, 0, 0, 0, 2]),
+        ("날씨는 대체로 평온할 예정이에요.", [0, 1, 0, 1, 0, 1, 0, 1]),
+    ])
+    def test_gen_heads_up(self, text: str, codes: list[int]):
+        forecast_weathers = [
+            ForecastWeather(timestamp=index, code=code, min_temp=10, max_temp=20, rain=0)
+            for index, code in enumerate(codes)
+        ]
+
+        assert gen_heads_up(weathers=forecast_weathers) == text
