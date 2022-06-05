@@ -29,7 +29,7 @@ class TestMessages(TestCase):
         ('어제와 비슷하게 덥습니다. 최고기온은 20도, 최저기온은 10도 입니다.', [15, 20, 10], 15),
         ('어제와 비슷하게 춥습니다. 최고기온은 20도, 최저기온은 5도 입니다.', [14, 5, 20], 14),
     ])
-    def test_gen_temperature(self, text: str, temps: list[int], cur_temp: int):
+    def test_gen_temperature(self, text: str, temps: list[float], cur_temp: int):
         current_weather = CurrentWeather(code=0, rain1h=0, temp=cur_temp)
         historical_weathers = [
             HistoricalWeather(timestamp=index, code=0, temp=temp, rain1h=0)

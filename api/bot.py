@@ -6,8 +6,8 @@ from fastapi import FastAPI, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import PlainTextResponse
 
-from api.gen_messages import gen_greeting
-from api.models import CurrentWeather
+from api.gen_messages import gen_greeting, gen_temperature
+from api.models import CurrentWeather, HistoricalWeather
 
 app = FastAPI()
 ONE_MINUTE = 60
@@ -25,10 +25,12 @@ async def summary(
 ):
     weathers = await get_weathers(lat=lat, lon=lon)
     current_weather = get_current_weather(weathers)
+    historical_weathers = get_historical_weathers(weathers)
 
     return {
         "summary": {
             "greeting": gen_greeting(current_weather),
+            "temperature": gen_temperature(historical_weathers, current_weather)
         }
     }
 
@@ -56,6 +58,16 @@ async def get_weathers(lat: float, lon: float):
 def get_mock_response():
     now = datetime.now()
 
-    results = [{"timestamp": (now.timestamp()), "code": 2, "temp": 38, "rain1h": 22}]
+    results = [{"timestamp": (now.timestamp()), "code": 2, "temp": 20, "rain1h": 22}]
+
+    # historical weathers
+    for i in range(-6, -25, -6):
+        results.append({
+            "timestamp": int((now + timedelta(hours=i)).timestamp()),
+            "code": random.choice([0, 1, 2, 3]),
+            "temp": random.choice(range(-20, 40)),
+            "rain1h": random.choice(range(0, 110))
+        })
+
 
     return json.dumps(results)

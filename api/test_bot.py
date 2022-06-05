@@ -36,3 +36,4 @@ class TestSummary(TestCase):
         response = client.get('/summary', params={'lat': 37.5, 'lon': 127})
         assert response.status_code == 200
         assert response.json()['summary']['greeting'] != ''
+        assert response.json()['summary']['temperature'] != ''
