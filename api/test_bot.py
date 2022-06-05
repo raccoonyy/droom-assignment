@@ -18,6 +18,9 @@ def test_get_current_weather():
 @patch('api.bot.get_weathers')
 def test_summary(mock_api):
     mock_api.return_value = json.loads(get_mock_response())
+    response = client.get('/summary')
+    assert response.status_code == 400
+
     response = client.get('/summary', params={'lat': 37.5, 'lon': 127})
     assert response.status_code == 200
     assert response.json()['summary']['greeting'] != ''

@@ -3,12 +3,19 @@ import random
 from datetime import datetime, timedelta
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import PlainTextResponse
 
 from api.gen_messages import gen_greeting
 from api.models import CurrentWeather
 
 app = FastAPI()
 ONE_MINUTE = 60
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return PlainTextResponse(str(exc), status_code=400)
 
 
 @app.get("/summary")
