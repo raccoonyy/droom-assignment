@@ -4,16 +4,10 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from api.bot import app, get_mock_response, get_current_weather
-from api.models import CurrentWeather
+from api.bot import app
+from api.weather_api import get_mock_response
 
 client = TestClient(app)
-
-
-def test_get_current_weather():
-    current_weather = get_current_weather(json.loads(get_mock_response()))
-
-    assert isinstance(current_weather, CurrentWeather)
 
 
 class TestSummary(TestCase):

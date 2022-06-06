@@ -23,9 +23,7 @@ async def summary(
         lon: float = Query(ge=-180, lt=180)
 ):
     weathers = await get_weathers(lat=lat, lon=lon)
-    current_weather = get_current_weather(weathers)
-    historical_weathers = get_historical_weathers(weathers)
-    forecast_weathers = get_forecast_weathers(weathers)
+    current_weather, historical_weathers, forecast_weathers = split_weathers(weathers)
 
     return {
         "summary": {
@@ -36,27 +34,18 @@ async def summary(
     }
 
 
-def get_current_weather(data):
-    now = datetime.now()
-    return [
-        CurrentWeather(**datum) for datum in data
-        if -ONE_MINUTE < int(now.timestamp()) - datum['timestamp'] < ONE_MINUTE
-    ][0]
+def split_weathers(data: list[dict]):
+    now: datetime = datetime.now()
+    current: CurrentWeather
+    historical: list[HistoricalWeather] = []
+    forecasts: list[ForecastWeather] = []
 
+    for datum in data:
+        if -ONE_MINUTE < int(now.timestamp()) - datum["timestamp"] < ONE_MINUTE:
+            current = CurrentWeather(**datum)
+        if ONE_MINUTE < int(now.timestamp()) - datum["timestamp"]:
+            historical.append(HistoricalWeather(**datum))
+        if now.timestamp() < datum["timestamp"]:
+            forecasts.append(ForecastWeather(**datum))
 
-def get_historical_weathers(data):
-    now = datetime.now()
-    return [
-        HistoricalWeather(**datum) for datum in data
-        if ONE_MINUTE < int(now.timestamp()) - datum['timestamp']
-    ]
-
-
-def get_forecast_weathers(data):
-    now = datetime.now()
-    return [
-        ForecastWeather(**datum) for datum in data
-        if now.timestamp() < datum['timestamp']
-    ]
-
-
+    return current, historical, forecasts
