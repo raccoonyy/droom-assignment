@@ -20,6 +20,8 @@ export API_KEY={API_KEY}
 poetry run uvicorn api.bot:app --reload
 ```
 
+[http://127.0.0.1:8000/summary?lat=37.5&lon=127]() 접속
+
 ### 유닛 테스트
 
 ```shell
