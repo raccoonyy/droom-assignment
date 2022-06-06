@@ -25,3 +25,9 @@ poetry run uvicorn api.bot:app --reload
 ```shell
 poetry run pytest
 ```
+
+### 코드 포매팅 검사
+
+```shell
+poetry run flake8 api
+```
