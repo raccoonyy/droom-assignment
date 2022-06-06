@@ -11,6 +11,7 @@
 ```shell
 pip install -U poetry
 poetry install 
+export API_KEY={API_KEY}
 ```
 
 ### 개발 서버
