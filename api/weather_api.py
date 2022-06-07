@@ -7,7 +7,8 @@ from urllib.parse import urljoin
 
 import httpx
 
-API_KEY = os.environ.get("API_KEY")
+API_KEY = os.environ["API_KEY"]
+
 API_BASE_URL = "https://thirdparty-weather-api-v2.droom.workers.dev/"
 CURRENT = urljoin(API_BASE_URL, "/current")
 FORECAST = urljoin(API_BASE_URL, "/forecast/hourly")
